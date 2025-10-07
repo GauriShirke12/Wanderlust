@@ -5,6 +5,9 @@ const Listing = require('./models/listing');
 const path = require('path');
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
+const ejsMate = require('ejs-mate');
+
+
 
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/wanderlust';
 
@@ -20,9 +23,13 @@ async function main() {
   await mongoose.connect(MONGODB_URI); 
 }
 
+
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+app.engine('ejs', ejsMate);
 
 const PORT = process.env.PORT || 8000;
 app.use(express.json());
