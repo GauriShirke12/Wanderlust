@@ -19,7 +19,7 @@
         <div class="card-body">
           <p class="card-text mb-0">
             <b><%= listing.title %></b><br>
-            $<%= listing.price.toLocaleString("en-IN") %>/night<br>
+            $<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night<br>         
             <%= listing.location %><br>
             <%= listing.country %><br>
           </p>
