@@ -7,12 +7,12 @@
         </div><br><br><br><br>
         <div class="card col-6 offset-3 show-card">
 
-            <img src="<%= listing.image.url %>" class="card-img-top show-img " alt="listing_image">
+            <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/css/placeholder.png' %>" class="card-img-top show-img " alt="listing_image">
             <div class="card-body">
                 <p class="card-text offset-1">
                     <b><%= listing.title %></b><br>
                     <%= listing.description %><br>
-                        $<%= listing.price.toLocaleString("en-IN") %><br>
+                        $<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %><br>
                             <%= listing.location %><br>
                                 <%= listing.country %><br>
                 </p>
