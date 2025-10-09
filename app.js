@@ -6,6 +6,7 @@ const path = require('path');
 const methodOverride = require('method-override');
 app.use(methodOverride('_method'));
 const ejsMate = require('ejs-mate');
+const wrapAsync = require('./utils/wrapAsync');
 
 
 
@@ -59,11 +60,13 @@ app.get('/listings/:id', async (req, res) => {
 
 //create route
 
-app.post('/listings', async (req, res) => {
-  const newListing = new Listing(req.body.listing);
+app.post('/listings', wrapAsync(async(req, res, next) => {
+
+const newListing = new Listing(req.body.listing);
   await newListing.save();
   res.redirect("/listings");
-});
+})
+);
 
 //Edit route
 
@@ -102,6 +105,9 @@ app.delete('/listings/:id', async (req, res) => {
 //   res.send('Successful testing');
 // });
 
+app.use((err, req, res, next) => {
+  res.send('Something went wrong');
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
