@@ -7,6 +7,7 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync');
 const ExpressError = require('./utils/ExpressError');
+const { error } = require('console');
 
 
 
@@ -97,19 +98,6 @@ app.delete('/listings/:id', wrapAsync(async (req, res) => {
   res.redirect('/listings');
 }));
 
-// app.get('/testListing', async (req, res) => {
-//   const sampleListing = new Listing({
-//     title: 'My New Villa',
-//     description: 'By the beach',
-//     price: 1200,
-//     location: 'Calangute, Goa',
-//     country: 'India',
-//   });
-
-//   await sampleListing.save();
-//   console.log('Listing saved');
-//   res.send('Successful testing');
-// });
 
 // Fallback for unmatched routes - use app.use instead of app.all('*', ...)
 app.use((req, res, next) => {
@@ -120,7 +108,9 @@ app.use((req, res, next) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = 'Something went wrong' } = err;
-  res.status(statusCode).send(message);
+ res.status(statusCode).render("listings/error", { message });
+
+  // res.status(statusCode).send(message);
 });
 
 app.listen(PORT, () => {
