@@ -30,6 +30,7 @@ const listingSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
+
 });
 
 const Listing = mongoose.model('Listing', listingSchema);
