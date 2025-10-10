@@ -1,8 +1,8 @@
 <% layout("/layouts/boilerplate") %>
 
     <div class="row">
-        <div class="col-8 offset-2 md-3 mt-4">
-            <h3>Listings Details</h3>
+        <div class="col-8 offset-2 md-3 mt-5">
+            <h3 class="offset-2"><%= listing.title %></h3>
 
         </div><br><br><br><br>
         <div class="card col-6 offset-3 show-card">
@@ -10,7 +10,7 @@
             <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/css/placeholder.png' %>" class="card-img-top show-img " alt="listing_image">
             <div class="card-body">
                 <p class="card-text offset-1">
-                    <b><%= listing.title %></b><br>
+                   
                     <%= listing.description %><br>
                         $<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %><br>
                             <%= listing.location %><br>

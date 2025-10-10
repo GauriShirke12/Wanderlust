@@ -7,24 +7,17 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync');
 const ExpressError = require('./utils/ExpressError');
-const { listingSchema } = require('./schemas');
+const { listingSchema } = require('./schema');
 
-// Simple server-side validation middleware for listings
-function validateListing(req, res, next) {
-  if (!req.body || !req.body.listing) {
-    return next(new ExpressError(400, 'Invalid Listing Data'));
+const validateListing = (req, res, next) => {
+  const { error } = listingSchema.validate(req.body);
+  if (error) {
+    const errMsg = error.details.map(el => el.message).join(',');
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
   }
-  const { title, price } = req.body.listing;
-  if (!title || String(title).trim() === '') {
-    return next(new ExpressError(400, 'Listing must have a title'));
-  }
-  if (price !== undefined && price !== null && String(price).trim() !== '' && isNaN(Number(price))) {
-    return next(new ExpressError(400, 'Price must be a number'));
-  }
-  next();
-}
-
-
+};  
 
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/wanderlust';
 
@@ -55,17 +48,6 @@ app.use(express.json());
 app.get('/', (req, res) => {
   res.send('Hi, I am root');
 });
-
-const validateListing = (req, res, next) => {
-  let {error} = listingSchema.validate(req.body);
-  if (error) {
-    let errMsg = error.details.map(el => el.message).join(',');
-    throw new ExpressError(400, errMsg); 
-  }
-  else {
-    next();
-  }
-}
 
 //Index Route
 app.get('/listings', wrapAsync(async (req, res) => {
