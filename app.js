@@ -7,6 +7,9 @@ const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
 const flash = require('connect-flash');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const User = require('./models/user');
 
 
 
@@ -25,6 +28,13 @@ const sessionOptions = {
 
   app.use(session(sessionOptions));
   app.use(flash());
+
+  app.use(passport.initialize());
+  app.use(passport.session());
+  passport.use(new LocalStrategy(User.authenticate()));
+  passport.serializeUser(User.serializeUser());
+  passport.deserializeUser(User.deserializeUser());
+  
 
   app.use((req, res, next) => {
     // Log any flash messages currently stored in the session (non-consuming)
