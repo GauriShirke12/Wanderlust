@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const review = require('./review');
 const Schema = mongoose.Schema;
 const Review = require('./review');
 
@@ -34,9 +33,16 @@ const listingSchema = new Schema({
 
 });
 
-listingSchema.post('findOneAndDelete', async(listing) => {
-  if (listing) {
-    await Review.deleteMany({ _id: { $in: listing.reviews } });
+
+listingSchema.post('findOneAndDelete', async function(listing) {
+  if (!listing) return;
+  try {
+    if (Array.isArray(listing.reviews) && listing.reviews.length) {
+      await Review.deleteMany({ _id: { $in: listing.reviews } });
+    }
+  } catch (err) {
+    // Log the error instead of throwing to avoid crashing the server
+    console.error('Error deleting reviews for listing', listing._id, err);
   }
 });
 
