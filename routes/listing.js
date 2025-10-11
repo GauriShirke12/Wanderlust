@@ -4,7 +4,7 @@ const wrapAsync = require('../utils/wrapAsync');
 const Listing = require('../models/listing');
 const { listingSchema , reviewSchema } = require('../schema');
 const ExpressError = require('../utils/ExpressError');
-const { isLoggedIn } = require('../middleware');
+const { isLoggedIn, isOwner } = require('../middleware');
 
 
 const validateListing = (req, res, next) => {
@@ -33,7 +33,7 @@ router.get('/new', isLoggedIn, wrapAsync((req, res) => {
 //show router
 router.get('/:id', wrapAsync(async (req, res, next) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id).populate('reviews');
+  const listing = await Listing.findById(id).populate('reviews').populate('owner');
   if (!listing) {
     // listing was not found (maybe deleted) — flash an error and redirect to index
     req.flash('error', 'This listing does not exist');
@@ -47,7 +47,7 @@ router.get('/:id', wrapAsync(async (req, res, next) => {
     }
     return res.redirect('/listings');
   }
-
+console.log(listing);
   res.render('listings/show', { listing });
 }));
 
@@ -55,8 +55,16 @@ router.get('/:id', wrapAsync(async (req, res, next) => {
 //create router
 
 router.post('/', isLoggedIn, validateListing, wrapAsync(async(req, res, next) => {
-  
-  const newListing = new Listing(req.body.listing);
+  // Convert image string to object for Mongoose
+  const listingData = { ...req.body.listing };
+  if (typeof listingData.image === 'string') {
+    listingData.image = { url: listingData.image };
+  }
+  const newListing = new Listing(listingData);
+  // attach the currently authenticated user as the owner
+  if (req.user && req.user._id) {
+    newListing.owner = req.user._id;
+  }
   await newListing.save();
   req.flash('success', 'Successfully created a new listing!');
   res.redirect('/listings');
@@ -64,7 +72,7 @@ router.post('/', isLoggedIn, validateListing, wrapAsync(async(req, res, next) =>
 
 //Edit router
 
-router.get('/:id/edit', isLoggedIn, wrapAsync(async (req, res) => {
+router.get('/:id/edit', isLoggedIn, isOwner, wrapAsync(async (req, res) => {
    const { id } = req.params;
   const listing = await Listing.findById(id);
   if (!listing) {
@@ -80,29 +88,22 @@ router.get('/:id/edit', isLoggedIn, wrapAsync(async (req, res) => {
 }));
 
 //Update router
-router.put('/:id', isLoggedIn, validateListing, wrapAsync(async (req, res) => {
+router.put('/:id', isLoggedIn, isOwner, validateListing, wrapAsync(async (req, res) => {
+
   const { id } = req.params;
-  // return the updated document and run schema validators
-  const listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true, runValidators: true });
-  if (!listing) {
-    req.flash('error', 'This listing does not exist');
-    if (req.session) {
-      await new Promise((resolve) => {
-        req.session.save((err) => {
-          if (err) console.error('Session save error:', err);
-          resolve();
-        });
-      });
-    }
-    return res.redirect('/listings');
+  const listingData = { ...req.body.listing };
+  if (typeof listingData.image === 'string') {
+    listingData.image = { url: listingData.image };
   }
 
+  const updatedListing = await Listing.findByIdAndUpdate(id, listingData, { new: true, runValidators: true });
+
   req.flash('success', 'Listing updated successfully!');
-  res.redirect(`/listings/${listing._id}`);
+  res.redirect(`/listings/${updatedListing._id}`);
 }));
 
 //Delete router
-router.delete('/:id', isLoggedIn, wrapAsync(async (req, res) => {
+router.delete('/:id', isLoggedIn, isOwner, wrapAsync(async (req, res) => {
   const { id } = req.params;
   let deletedListing = await Listing.findByIdAndDelete(id);
   console.log(deletedListing);

@@ -25,10 +25,11 @@ const listingSchema = new Schema({
   reviews: [{
     type: Schema.Types.ObjectId,
     ref: 'Review',  
-  }],
-  createdAt: {
-    type: Date,
-    default: Date.now(),
+  },
+],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
   },
 
 });

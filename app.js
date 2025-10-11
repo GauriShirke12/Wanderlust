@@ -47,8 +47,7 @@ const sessionOptions = {
           console.log('session.flash before consuming:', JSON.stringify(req.session.flash));
         }
       }
-    } catch (e) {
-      // ignore logging errors
+    } catch (e) { 
     }
 
 
@@ -106,8 +105,6 @@ app.use((err, req, res, next) => {
 
  
 });
-
-// Server is started after DB connect above.
 
 // Connect to DB and start server after all middleware and routes are registered
 main()
