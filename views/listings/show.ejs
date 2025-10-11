@@ -1,7 +1,5 @@
 <% layout("/layouts/boilerplate") %>
 
-<!-- Flash messages are rendered in the layout (boilerplate.ejs) -->
-
     <div class="row">
         <div class="col-8 offset-2 md-3 mt-5">
             <h3 class="offset-2"><%= listing.title %></h3>
@@ -34,6 +32,7 @@
 </div>
 
 <hr>
+<% if(currentUser){ %>
 <div class="col-8 offset-3 mb-3">
     <h4>Leave a Review</h4>
     <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
@@ -45,9 +44,16 @@
             <label for="comment" class="form-label" >Comment</label>
             <textarea name="review[comment]" id="comment" cols="20" rows="5" class="form-control" required ></textarea>
             <div class="invalid-feedback">Please provide a valid comment.</div>
-        </div>
+</div>
         <button type="submit" class="btn btn-outline-dark">Submit Review</button>
     </form>
+
+
+</div><% } else { %>
+    <div class="col-8 offset-3 mb-3">
+        <h4><a href="/login">Log in</a> to leave a review</h4>
+    </div>
+<% } %>
 <hr>
 <p><b>All reviews</b></p>
  <div class="row">
@@ -55,13 +61,15 @@
     <% listing.reviews.forEach(function(review) { %>
         <div class="card mb-3 col-5 ms-3">
             <div class="card-body">
-                <h5 class="card-title">Jone Doe</h5>
+                <h5 class="card-title"><%= (review.author && review.author.username) ? review.author.username : 'Anonymous' %></h5>
                 <p class="card-text"><%= review.comment %></p><br>
                 <p class="card-text"><%= review.rating %>star</p>
             </div>
+            <% if (currentUser && review.author && String(currentUser._id) === String(review.author._id)) { %>
             <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
                 <button class="btn btn-dark">Delete</button>
             </form>
+            <% } %>
         </div>
     <% }) %>
 <% } else { %>

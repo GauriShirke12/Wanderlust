@@ -87,7 +87,18 @@ app.get('/', (req, res) => {
   res.send('Hi, I am root');
 });
 
+app.use('/listings', listingRouter);
+app.use('/listings/:id/reviews', reviewsRouter);
 
+// Debug middleware: log incoming requests (temporary)
+app.use((req, res, next) => {
+  try {
+    console.log('INCOMING REQUEST ->', req.method, req.originalUrl);
+  } catch (e) {
+    // ignore logging errors
+  }
+  next();
+});
 
 app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewsRouter);
