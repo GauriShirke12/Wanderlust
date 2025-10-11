@@ -7,8 +7,10 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync');
 const ExpressError = require('./utils/ExpressError');
-const { listingSchema } = require('./schema');
+const { listingSchema , reviewSchema } = require('./schema');
 const Review = require('./models/review');
+
+
 
 
 const validateListing = (req, res, next) => {
@@ -20,6 +22,20 @@ const validateListing = (req, res, next) => {
     next();
   }
 };  
+
+
+const validateReview = (req, res, next) => {
+  const { error } = reviewSchema.validate(req.body);
+  if (error) {
+    const errMsg = error.details.map(el => el.message).join(',');
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
+};  
+
+
+
 
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/wanderlust';
 
@@ -65,7 +81,7 @@ app.get('/listings/new', wrapAsync((req, res) => {
 //show route
 app.get('/listings/:id', wrapAsync(async (req, res, next) => {
   const { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate('reviews');
   if (!listing) return next(new ExpressError(404, 'Listing not found'));
   res.render('listings/show', { listing });
 }));
@@ -107,22 +123,31 @@ app.delete('/listings/:id', wrapAsync(async (req, res) => {
 //Reviews
 //Post Route for reviews
 
-app.post('/listings/:id/reviews', async (req, res) => {
- 
-  const listing = await Listing.findById(req.params.id);
+
+app.post('/listings/:id/reviews', validateReview, wrapAsync(async (req, res) => {
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+
+  if (!listing) throw new ExpressError(404, 'Listing not found');
+
   const newReview = new Review(req.body.review);
 
-  listing.reviews.push(newReview);
-  
   await newReview.save();
+  listing.reviews.push(newReview._id);
   await listing.save();
 
   res.redirect(`/listings/${listing._id}`);
-});
+}));
+
+//Delete Route for reviews
+app.delete('/listings/:id/reviews/:reviewId', wrapAsync(async (req, res) => {
+  const { id, reviewId } = req.params;
+  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+  await Review.findByIdAndDelete(reviewId);
 
 
-
-
+  res.redirect(`/listings/${id}`);
+}));
 
 // Fallback for unmatched routes - use app.use instead of app.all('*', ...) 
 app.use((req, res, next) => { 
