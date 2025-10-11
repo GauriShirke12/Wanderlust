@@ -11,18 +11,18 @@
 
             <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/css/placeholder.png' %>" class="card-img-top show-img " alt="listing_image">
             <div class="card-body">
-                <p class="card-text offset-1">
-                   
-                    <%= listing.description %><br>
-                        $<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %><br>
-                            <%= listing.location %><br>
-                                <%= listing.country %><br>
+                <p class="card-text offset-1">Owned by <i><%= (listing.owner && listing.owner.username) ? listing.owner.username : 'Unknown owner' %></i></p><br>
+                    <p class="card-text"><%= listing.description %></p><br>
+                       <p class="card-text">$<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %></p> <br>
+                            <p class="card-text"><%= listing.location %></p><br>
+                            <p class="card-text"><%= listing.country %></p><br>
                 </p>
             </div>
         </div>
         <br>
-
     </div>
+
+
 <div class="btns">
     <a href="/listings/<%= listing._id%>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
 
@@ -32,6 +32,7 @@
         <button class="btn btn-dark offset-5">Delete</button>
     </form>
 </div>
+
 <hr>
 <div class="col-8 offset-3 mb-3">
     <h4>Leave a Review</h4>

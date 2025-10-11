@@ -8,7 +8,14 @@ const listingSchema = Joi.object({
                      
         location: Joi.string().required(),
         country: Joi.string().required(),
-        image: Joi.string().required().allow("", null),
+        // allow image to be either a string (from the form) or an object { url, filename }
+        image: Joi.alternatives().try(
+            Joi.string().allow("", null),
+            Joi.object({
+                url: Joi.string().allow("", null).optional(),
+                filename: Joi.string().allow("", null).optional()
+            })
+        ).optional(),
 
             }).required()
 });
