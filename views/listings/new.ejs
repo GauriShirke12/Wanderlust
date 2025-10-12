@@ -4,7 +4,7 @@
     <div class="col-8 offset-2">
     <div class="col-md-8 offset-md-2">
 <h3 class="my-4">Create New Listing</h3>
-<form method="post" action="/listings" novalidate class="needs-validation">
+<form method="post" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input id="title" name="listing[title]" type="text" placeholder="Add a catchy title" class="form-control" required />
@@ -18,9 +18,9 @@
     </div>
 
     <div class="mb-3">
-        <label for="image" class="form-label">Image URL</label>
+        <label for="image" class="form-label">Upload Listing Image</label>
         <!-- submit as an object so server receives listing.image.url -->
-        <input id="image" name="listing[image][url]" type="text" placeholder="Image URL" class="form-control"/>
+        <input id="image" name="listing[image][url]" type="file" class="form-control" required/>
     </div>
 
     <div class="row">

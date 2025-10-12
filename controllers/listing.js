@@ -42,6 +42,10 @@ console.log(listing);
 
 
 module.exports.createListing=async(req, res, next) => {
+
+  const url= req.file.path;
+  const filename= req.file.filename;
+  newListing.image={url, filename};
   // Convert image string to object for Mongoose
   const listingData = { ...req.body.listing };
   console.log('createListing: raw listingData:', listingData);
@@ -86,6 +90,14 @@ module.exports.updateListing= async (req, res) => {
 
   const { id } = req.params;
   const listingData = { ...req.body.listing };
+ if(typeof req.file !== 'undefined'){
+  const url= req.file.path;
+  const filename= req.file.filename;
+ listingData.image={url, filename};
+ await listingData.save();
+
+ }
+  
   if (typeof listingData.image === 'string') {
     listingData.image = { url: listingData.image };
   }
