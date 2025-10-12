@@ -19,7 +19,8 @@
 
     <div class="mb-3">
         <label for="image" class="form-label">Image URL</label>
-        <input id="image" name="listing[image]" type="text" placeholder="Image URL" class="form-control"/>
+        <!-- submit as an object so server receives listing.image.url -->
+        <input id="image" name="listing[image][url]" type="text" placeholder="Image URL" class="form-control"/>
     </div>
 
     <div class="row">
