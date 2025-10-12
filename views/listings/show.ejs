@@ -7,7 +7,7 @@
         </div><br><br><br><br>
         <div class="card col-6 offset-3 show-card listing-card">
 
-            <img src="<%= (listing.image && listing.image.url) ? listing.image.url : '/css/placeholder.png' %>" class="card-img-top show-img " alt="listing_image">
+            <img src="<%= (listing.image && listing.image.url) ? listing.image.url : 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1196&auto=format&fit=crop&ixlib=rb-4.1.0' %>" class="card-img-top show-img " alt="listing_image">
             <div class="card-body">
                 <p class="card-text offset-1">Owned by <i><%= (listing.owner && listing.owner.username) ? listing.owner.username : 'Unknown owner' %></i></p><br>
                     <p class="card-text"><%= listing.description %></p><br>
@@ -20,7 +20,6 @@
         <br>
     </div>
 
-
 <div class="btns">
     <a href="/listings/<%= listing._id%>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
 
@@ -32,26 +31,43 @@
 </div>
 
 <hr>
-<% if(currentUser){ %>
-<div class="col-8 offset-3 mb-3">
-    <h4>Leave a Review</h4>
-    <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
-        <div class="mb-3 mt-3">
-            <label for="rating" class="for-label" >Rating</label>
-            <input type="range" name="review[rating]" id="rating" min="1" max="5">
-        </div>
-        <div class="mb-3 mt-3">
-            <label for="comment" class="form-label" >Comment</label>
-            <textarea name="review[comment]" id="comment" cols="20" rows="5" class="form-control" required ></textarea>
-            <div class="invalid-feedback">Please provide a valid comment.</div>
-</div>
-        <button type="submit" class="btn btn-outline-dark">Submit Review</button>
-    </form>
-
-
-</div><% } else { %>
+<% if (currentUser) { %>
     <div class="col-8 offset-3 mb-3">
-        <h4><a href="/login">Log in</a> to leave a review</h4>
+        <div class="card p-3 review-form-card">
+            <h4 class="mb-3">Leave a Review</h4>
+            <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation">
+                <!-- Star rating (radio inputs) - submit as review[rating] -->
+                <fieldset class="starability-slot mb-3">
+                    <legend class="visually-hidden">Rating</legend>
+                    <!-- removed default no-rate (value 0) so server validation requiring 1-5 will succeed when user selects a rating -->
+                    <input type="radio" id="rate1" name="review[rating]" value="1" required />
+                    <label for="rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="rate2" name="review[rating]" value="2" />
+                    <label for="rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="rate3" name="review[rating]" value="3" />
+                    <label for="rate3" title="Average">3 stars</label>
+                    <input type="radio" id="rate4" name="review[rating]" value="4" />
+                    <label for="rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="rate5" name="review[rating]" value="5" />
+                    <label for="rate5" title="Amazing">5 stars</label>
+                </fieldset>
+
+                <div class="mb-3 mt-3">
+                    <label for="comment" class="form-label">Comment</label>
+                    <textarea name="review[comment]" id="comment" cols="20" rows="5" class="form-control" required></textarea>
+                    <div class="invalid-feedback">Please provide a valid comment.</div>
+                </div>
+
+                <button type="submit" class="btn btn-outline-dark">Submit Review</button>
+            </form>
+        </div>
+    </div>
+<% } else { %>
+    <div class="col-8 offset-3 mb-3">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Please <a href="/login" class="alert-link">log in</a> to leave a review.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </div>
 <% } %>
 <hr>
@@ -59,11 +75,24 @@
  <div class="row">
 <% if (listing.reviews && listing.reviews.length) { %>
     <% listing.reviews.forEach(function(review) { %>
-        <div class="card mb-3 col-5 ms-3">
+        <div class="card mb-3 col-5 ms-3 review-card">
             <div class="card-body">
-                <h5 class="card-title"><%= (review.author && review.author.username) ? review.author.username : 'Anonymous' %></h5>
-                <p class="card-text"><%= review.comment %></p><br>
-                <p class="card-text"><%= review.rating %>star</p>
+                                <div class="review-header">
+                                    <% const reviewerName = (review.author && review.author.username) ? review.author.username : 'Anonymous'; %>
+                                    <% const initial = reviewerName.charAt(0); %>
+                                    <span class="review-avatar" title="<%= reviewerName %>"><%= initial %></span>
+                                    <h5 class="card-title"><%= reviewerName %></h5>
+                                </div>
+                                <p class="card-text"><%= review.comment %></p><br>
+                                                <div class="review-stars" role="img" aria-label="Rating: <%= review.rating %> out of 5">
+                                                    <% for (var i = 1; i <= 5; i++) { %>
+                                                        <% if (i <= (review.rating || 0)) { %>
+                                                            <i class="fa-solid fa-star"></i>
+                                                        <% } else { %>
+                                                            <i class="fa-regular fa-star"></i>
+                                                        <% } %>
+                                                    <% } %>
+                                                </div>
             </div>
             <% if (currentUser && review.author && String(currentUser._id) === String(review.author._id)) { %>
             <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">

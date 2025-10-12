@@ -22,7 +22,8 @@
 
         <div class="mb-3">
             <label for="image" class="form-label">Image URL</label><br>
-             <input name="listing[image]" type="text" value="<%= listing.image.url %>" class="form-control" />
+             <!-- send image as object with url property -->
+             <input id="image" name="listing[image][url]" type="text" value="<%= listing.image && listing.image.url ? listing.image.url : '' %>" class="form-control" />
             <div class="invalid-feedback">Please provide a valid image URL.</div>
         </div>
 
