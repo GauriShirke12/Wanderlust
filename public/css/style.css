@@ -13,10 +13,47 @@ body{
   padding: 0;
 }
 
+.flash-container{
+  position: fixed;
+  top: calc(5rem + 0.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: min(90vw, 28rem);
+  z-index: 2000;
+  pointer-events: none;
+}
+
+.flash-container .flash-message{
+  margin: 0;
+  pointer-events: auto;
+  box-shadow: 0 12px 28px rgba(34,34,34,0.12);
+}
+
+body.has-flash .container{
+  padding-top: 7.5rem;
+}
+
+body.has-flash #filters{
+  margin-top: -7rem;
+}
+
+@media (max-width: 576px) {
+  .flash-container{
+    top: calc(5rem + 0.5rem);
+    width: calc(100vw - 1.5rem);
+  }
+}
+
 /* make the main container grow so footer sits at bottom when content is short */
 .container{
   flex: 1 0 auto;
   padding-bottom: 0.5rem;
+  /* Add top padding equal to navbar height so page content is not hidden
+     under the sticky navbar when it becomes fixed at the top. */
+  padding-top: 5rem; /* matches .navbar { height: 5rem; } */
 }
 
 .navbar{
@@ -33,73 +70,7 @@ body{
   color: #222222 !important;
 }
 
-/* footer */
 
-/* footer */
-.site-footer {
-  width: 100%;
-  margin-top: auto;
-}
-
-.f-info{
-  text-align: center;
-  height: auto;
-  background-color: #ebebeb; /* darker so it's not greyish */
-  color: #222222;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem 1.25rem;
-}
-
-.f-info-links a {
-  text-decoration: none;
-  color: #222222;
-  margin:0.5rem;
-}
-
-.f-info-links a:hover {
-  text-decoration: underline;
-}
-
-.f-info-links ,
-.f-info-socials , .f-info-brand{
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;  
-}
-
-.f-social-icons {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.f-info-socials i, .social-link i {
-  font-size: 1.2rem;
-  color: #222222;
-}
-
-.social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-    background: rgba(255,255,255,0.06);
-  border-radius: 6px;
- color: #ebebeb;
-  text-decoration: none;
- 
-}
-
-.social-link:hover {
-  background: rgba(255,255,255,0.12);
-  color: #222222;
-}
 
 /* small screens: tighten spacing */
 @media (max-width: 576px) {
@@ -107,9 +78,13 @@ body{
     padding: 1rem;
     gap: 0.5rem;
   }
-}
+} */
 
 /* card */
+
+.card{
+  border: none !important;
+}
 
 .listing-card{
   border: none !important;
@@ -265,3 +240,130 @@ body{
 }
 .review-header { display: flex; align-items: center; gap: 0.18rem; justify-content: flex-start; }
 .review-header h5 { display: inline-block; margin: 0; font-size: 0.95rem; line-height: 1; }
+
+.reviews-summary {
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.reviews-section {
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(34,34,34,0.08);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(34,34,34,0.04);
+}
+
+.reviews-section h4 {
+  font-weight: 600;
+}
+
+
+/* map */
+
+#map { 
+  height: 400px;
+  width: 80vh;
+ }
+
+
+/* Footer */
+
+  .site-footer {
+  background-color: #f7f7f7;
+  color: #222;
+  font-family: Arial, sans-serif;
+  padding: 50px 10%;
+  border-top: 1px solid #ddd;
+ 
+  margin-top: 100px; 
+
+
+}
+
+.footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-bottom: 40px;
+}
+
+.footer-section {
+  flex: 1 1 250px;
+  margin-bottom: 20px;
+}
+
+.footer-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+
+.footer-section a {
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.footer-section a:hover {
+  text-decoration: underline;
+}
+
+/* Bottom bar */
+.footer-bottom {
+  border-top: 1px solid #ddd;
+  padding-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.f-info-links a {
+  margin: 0 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.f-info-links a:hover {
+  text-decoration: underline;
+}
+
+.f-info-socials a {
+  margin-left: 12px;
+  color: #333;
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.f-info-socials a:hover {
+  color: #ff5a5f;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .f-info-links a {
+    display: inline-block;
+    margin: 5px 10px 0 0;
+  }
+}

@@ -87,9 +87,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hi, I am root');
-});
+// app.get('/', (req, res) => {
+//   res.send('Hi, I am root');
+// });
 
 app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewsRouter);

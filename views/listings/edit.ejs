@@ -21,8 +21,13 @@
         </div>
 
         <div class="mb-3">
+            Original image<br>
+            <img src="<%= originalImageUrl %>" alt="Original listing image" class="img-thumbnail" style="max-width:250px; height:auto;"/>
+        </div>
+
+
+        <div class="mb-3">
             <label for="image" class="form-label">Upload New Image</label><br>
-             <!-- send image as object with url property -->
              <input id="image" name="listing[image][url]" type="file"  class="form-control" />
         
         </div>
