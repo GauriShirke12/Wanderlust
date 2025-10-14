@@ -42,6 +42,7 @@ console.log(listing);
 
 
 module.exports.createListing=async(req, res, next) => {
+
   // Convert image string to object for Mongoose
   const listingData = { ...req.body.listing };
   console.log('createListing: raw listingData:', listingData);
@@ -54,6 +55,13 @@ module.exports.createListing=async(req, res, next) => {
     // Use the model's default Unsplash image when user doesn't provide a URL
     listingData.image.url = 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1196&auto=format&fit=crop&ixlib=rb-4.1.0';
   }
+  // If a file was uploaded by multer, attach its path/filename to the data
+  if (req.file) {
+    const url = req.file.path;
+    const filename = req.file.filename;
+    listingData.image = { url, filename };
+  }
+
   const newListing = new Listing(listingData);
   console.log('createListing: newListing before save:', newListing);
   // attach the currently authenticated user as the owner
@@ -78,7 +86,17 @@ module.exports.renderEditForm = async (req, res) => {
     }
     return res.redirect('/listings');
   }
-  res.render('listings/edit', { listing });
+
+  let originalImageUrl = listing.image.url;
+  // create a smaller thumbnail variant for the edit form
+  if (originalImageUrl && typeof originalImageUrl === 'string') {
+    // replace returns a new string so reassign; ensure there's a trailing slash after the transformation
+    originalImageUrl = originalImageUrl.replace('/upload/', '/upload/w_250/');
+  } else {
+    // provide a small fallback image
+    originalImageUrl = 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=250&auto=format&fit=crop&ixlib=rb-4.1.0';
+  }
+  res.render('listings/edit', { listing, originalImageUrl });
 };
 
 
@@ -86,6 +104,13 @@ module.exports.updateListing= async (req, res) => {
 
   const { id } = req.params;
   const listingData = { ...req.body.listing };
+ if(typeof req.file !== 'undefined'){
+  const url= req.file.path;
+  const filename= req.file.filename;
+ listingData.image={url, filename};
+
+ }
+  
   if (typeof listingData.image === 'string') {
     listingData.image = { url: listingData.image };
   }

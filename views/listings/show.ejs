@@ -1,5 +1,21 @@
 <% layout("/layouts/boilerplate") %>
 
+<% if (!currentUser) { %>
+    <div class="row justify-content-center mt-4">
+        <div class="col-10 col-lg-8">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span class="mb-0">Please log in to leave a review.</span>
+                    <form action="/login" method="GET" class="mb-0">
+                        <button type="submit" class="btn btn-warning btn-sm">Log In</button>
+                    </form>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+<% } %>
+
     <div class="row">
         <div class="col-8 offset-2 md-3 mt-5">
             <h3 class="offset-2"><%= listing.title %></h3>
@@ -30,9 +46,10 @@
     </form>
 </div>
 
-<hr>
+
 <% if (currentUser) { %>
-    <div class="col-8 offset-3 mb-3">
+    <hr>
+    <div class="col-6 offset-3 mb-3">
         <div class="card p-3 review-form-card">
             <h4 class="mb-3">Leave a Review</h4>
             <form action="/listings/<%= listing._id %>/reviews" method="POST" class="needs-validation">
@@ -62,49 +79,61 @@
             </form>
         </div>
     </div>
-<% } else { %>
-    <div class="col-8 offset-3 mb-3">
-        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            Please <a href="/login" class="alert-link">log in</a> to leave a review.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<% } %>
+
+<hr>
+
+<% if (listing.reviews && listing.reviews.length) { %>
+    <div class="col-8 offset-3 reviews-summary">
+        <div class="review-stars" role="img" aria-label="Average Rating: <%= (typeof listing.averageRating === 'number' && isFinite(listing.averageRating)) ? listing.averageRating.toFixed(1) : '0.0' %> out of 5">
+            <!-- Visual stars removed; aria-label preserved for screen readers -->
         </div>
     </div>
 <% } %>
-<hr>
-<p><b>All reviews</b></p>
- <div class="row">
-<% if (listing.reviews && listing.reviews.length) { %>
-    <% listing.reviews.forEach(function(review) { %>
-        <div class="card mb-3 col-5 ms-3 review-card">
-            <div class="card-body">
-                                <div class="review-header">
-                                    <% const reviewerName = (review.author && review.author.username) ? review.author.username : 'Anonymous'; %>
-                                    <% const initial = reviewerName.charAt(0); %>
-                                    <span class="review-avatar" title="<%= reviewerName %>"><%= initial %></span>
-                                    <h5 class="card-title"><%= reviewerName %></h5>
-                                </div>
-                                <p class="card-text"><%= review.comment %></p><br>
-                                                <div class="review-stars" role="img" aria-label="Rating: <%= review.rating %> out of 5">
-                                                    <% for (var i = 1; i <= 5; i++) { %>
-                                                        <% if (i <= (review.rating || 0)) { %>
-                                                            <i class="fa-solid fa-star"></i>
-                                                        <% } else { %>
-                                                            <i class="fa-regular fa-star"></i>
-                                                        <% } %>
-                                                    <% } %>
-                                                </div>
-            </div>
-            <% if (currentUser && review.author && String(currentUser._id) === String(review.author._id)) { %>
-            <form class="mb-3" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
-                <button class="btn btn-dark">Delete</button>
-            </form>
-            <% } %>
+
+<div class="col-8 offset-3 reviews-section">
+    <% if (listing.reviews && listing.reviews.length) { %>
+    <h4 class="mb-3">All Reviews</h4>
+
+        <div class="row g-3">
+            <% listing.reviews.forEach(function(review) { %>
+                <div class="col-md-6 col-sm-12">
+                    <div class="card h-100 review-card">
+                        <div class="card-body">
+                            <div class="review-header">
+                                <% const reviewerName = (review.author && review.author.username) ? review.author.username : 'Anonymous'; %>
+                                <% const initial = reviewerName.charAt(0); %>
+                                <span class="review-avatar" title="<%= reviewerName %>"><%= initial %></span>
+                                <h5 class="card-title"><%= reviewerName %></h5>
+                            </div>
+                            <p class="card-text"><%= review.comment %></p>
+                            <div class="review-stars" role="img" aria-label="Rating: <%= review.rating %> out of 5">
+                                <% for (var i = 1; i <= 5; i++) { %>
+                                    <% if (i <= (review.rating || 0)) { %>
+                                        <i class="fa-solid fa-star"></i>
+                                    <% } else { %>
+                                        <i class="fa-regular fa-star"></i>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                        <% if (currentUser && review.author && String(currentUser._id) === String(review.author._id)) { %>
+                        <div class="card-footer bg-white border-0">
+                            <form class="mb-0" method="POST" action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                                <button class="btn btn-dark">Delete</button>
+                            </form>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
         </div>
-    <% }) %>
-<% } else { %>
-    <p>No reviews yet</p>
-<% } %>
+    <% } %>
+</div>
+<div class="col-6 offset-2 mb-3">
+    <h3></h3>
+    <div id="map"></div>
 </div>
 </div>
-</div>
+
 <script src="/js/script.js"></script>

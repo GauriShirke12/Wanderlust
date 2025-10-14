@@ -1,8 +1,156 @@
 <% layout("/layouts/boilerplate") %>
-<!-- Flash messages are rendered in the layout (boilerplate.ejs) -->
-  <h3>All Listings</h3>
 
-  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 g-3">
+<style>
+/* Filters container: icons on the left, tax toggle aligned to the right */
+
+/* Keep filters fixed below the navbar */
+#filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  margin-top: -4.5rem; 
+}
+
+
+.filter{
+  text-align: center;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 4.5rem;
+}
+.filter:hover{
+  opacity: 0.85;
+  cursor: pointer;
+}
+.filter p{
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0 0;
+}
+
+/* icon wrapper - keeps icons square and centered */
+.icon{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.2rem; /* reduced further */
+  height: 2.2rem;
+}
+.icon i{
+  font-size: 0.95rem; /* base size reduced */
+}
+
+.tax-info{
+  display: none;
+}
+
+.tax-toggle{
+  border: 1px solid rgba(34,34,34,0.18); /* slightly darker */
+  border-radius: 1rem;
+  padding: 0.6rem 1rem; /* slightly larger */
+  height: 3.6rem; /* make it a bit taller */
+  width: fit-content;
+  margin-left: auto; /* push to the far right of the filters row */
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(34,34,34,0.04);
+}
+
+.tax-toggle:hover, .tax-toggle:focus-within{
+  border-color: rgba(34,34,34,0.32);
+  box-shadow: 0 4px 12px rgba(34,34,34,0.06);
+}
+
+/* Make icons and spacing responsive */
+@media (min-width: 768px){
+  .icon i{ font-size: 1.15rem; }
+  .filter p{ font-size: 0.9rem; }
+}
+@media (max-width: 480px){
+  .icon{ width: 1.8rem; height: 1.8rem; }
+  .icon i{ font-size: 0.85rem; }
+  .tax-toggle{ padding: 0.4rem 0.6rem; height: 3.2rem; }
+  #filters{ gap: 0.5rem; }
+  .filter p{ font-size: 0.7rem; }
+}
+
+/* make the bootstrap-like switch slightly larger inside our toggle */
+.tax-toggle .form-check-input {
+  width: 2.1rem;
+  height: 1.2rem;
+}
+.tax-toggle .form-check-input:checked {
+  background-color: #fe424d; /* keep consistent with brand */
+  border-color: #fe424d;
+}
+.tax-toggle .form-check-label{
+  font-size: 0.95rem; /* slightly bigger label */
+  margin-left: 0.25rem;
+}
+</style>
+
+
+<div id="filters">
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-fire"></i></div>
+   <p>Trending</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-bed"></i></div>
+   <p>Rooms</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-mountain-city"></i></div>
+   <p>Iconic cities</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-mountain-sun"></i></div>
+   <p>Mountains</p>
+  </div>
+   <div class="filter">
+   <div class="icon"><i class="fa-solid fa-chess-rook"></i></div>
+   <p>Castles</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-person-swimming"></i></div>
+   <p>pools</p>
+  </div>
+   <div class="filter">
+   <div class="icon"><i class="fa-solid fa-tree"></i></div>
+   <p>camping</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-cow"></i></div>
+   <p>farm</p>
+  </div>
+   <div class="filter">
+   <div class="icon"><i class="fa-solid fa-snowflake"></i></div>
+   <p>Arctic</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-person-hiking"></i></div>
+   <p>hiking</p>
+  </div>
+  <div class="filter">
+   <div class="icon"><i class="fa-solid fa-sailboat"></i></i></div>
+   <p>Boats</p>
+  </div>
+
+  <div class="tax-toggle">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+      <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
+    </div>
+  </div>
+
+</div>
+
+  <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 g-3 mt-3">
 
 <% for(let listing of allListings) { %>
   <div class="col">
@@ -19,9 +167,8 @@
         <div class="card-body">
           <p class="card-text mb-0">
             <b><%= listing.title %></b><br>
-            $<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night<br>         
-            <%= listing.location %><br>
-            <%= listing.country %><br>
+            $<%= listing.price ? listing.price.toLocaleString("en-IN") : "N/A" %>/night 
+            <i class="tax-info">+18% GST</i>        
           </p>
         </div>
       </div>
@@ -30,6 +177,19 @@
 <% } %>
   </div>
  
+<script>
+  let taxSwitch = document.getElementById('switchCheckDefault');
+ taxSwitch.addEventListener('click',() => {
+let taxInfo = document.getElementsByClassName('tax-info');
+for(info of taxInfo){
+  if(info.style.display != "inline"){
+   info.style.display = "inline";
+  } else {
+     info.style.display = "none";
+  }
+}
 
+ });
+</script>
   
  
