@@ -10,6 +10,7 @@ const methodOverride = require('method-override');
 const ejsMate = require('ejs-mate');
 const ExpressError = require('./utils/ExpressError');
 const session = require('express-session');
+const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -21,9 +22,42 @@ const userRouter =require('./routes/user');
 const analyticsRouter = require('./routes/analytics');
 
 
+// const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/wanderlust';
+const PORT = process.env.PORT || 8000;
+
+const dburl = process.env.MONGODB_URI ;
+// Connect to DB and start server after all middleware and routes are registered
+main()
+  .then(() => {
+    console.log('Connected to DB');
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+ 
+  .catch((err) => {
+    console.error('Failed to connect to DB', err);
+  });
+
+  async function main() {
+  await mongoose.connect(dburl);
+}
+
+const store = MongoStore.create({
+  mongoUrl: dburl,
+  crypto: {
+    secret: process.env.SECRET,
+  },
+  touchAfter: 24 * 60 * 60 // time period in seconds
+});
+
+store.on("error", function(e){
+  console.log("SESSION STORE ERROR", e)
+});
 
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET || 'mysupersecretcode',
+  store,
+  secret: process.env.SECRET,
   resave: false,
   saveUninitialized: true,
   cookie : {
@@ -32,6 +66,7 @@ const sessionOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 };
+
 
 
   app.use(session(sessionOptions));
@@ -72,13 +107,6 @@ const listings = require('./routes/listing');
 const reviews = require('./routes/review');
 
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/wanderlust';
-
-const PORT = process.env.PORT || 8000;
-
-async function main() {
-  await mongoose.connect(MONGODB_URI);
-}
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -88,10 +116,6 @@ app.engine('ejs', ejsMate);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json());
-
-// app.get('/', (req, res) => {
-//   res.send('Hi, I am root');
-// });
 
 app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewsRouter);
@@ -125,14 +149,3 @@ app.use((err, req, res, next) => {
  
 });
 
-// Connect to DB and start server after all middleware and routes are registered
-main()
-  .then(() => {
-    console.log('Connected to DB');
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Failed to connect to DB', err);
-  });
