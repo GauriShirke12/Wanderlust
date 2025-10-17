@@ -26,7 +26,7 @@ const listingSchema = new Schema({
     ref: 'User',
   },
 
-});
+}, { timestamps: true });
 
 
 listingSchema.post('findOneAndDelete', async function(listing) {

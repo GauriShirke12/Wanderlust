@@ -262,10 +262,35 @@ body.has-flash #filters{
 
 /* map */
 
-#map { 
-  height: 400px;
-  width: 80vh;
- }
+.map-section {
+  padding: 1.5rem;
+  border: 1px solid rgba(34,34,34,0.08);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(34,34,34,0.05);
+}
+
+.map-container {
+  position: relative;
+  min-height: 320px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f6f6f6;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.map-status {
+  margin: 0;
+  padding: 1.5rem;
+  text-align: center;
+  color: #555;
+  font-size: 1rem;
+}
 
 
 /* Footer */
