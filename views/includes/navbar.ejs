@@ -145,11 +145,12 @@
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
         <a class="nav-link" href="/listings">Explore</a>
+        <a class="nav-link" href="/analytics">Insights</a>
       </div>
 
       <div class="nav-search-wrap">
-        <form class="d-flex" role="search">
-          <input class="form-control me-2 search-inp" type="search" placeholder="Search Destinations" aria-label="Search"/>
+        <form class="d-flex" role="search" action="/listings" method="GET">
+          <input class="form-control me-2 search-inp" type="search" name="search" placeholder="Search Destinations" aria-label="Search" value="<%= (typeof searchTerm !== 'undefined' && searchTerm) ? searchTerm : '' %>" />
           <button class="btn btn-search" type="submit"><i class="fa-solid fa-magnifying-glass"></i>
             Search</button>
         </form>

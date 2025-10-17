@@ -1,7 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 
 <% if (!currentUser) { %>
-    <div class="row justify-content-center mt-4">
+    <div class="row justify-content-center mt-1">
         <div class="col-10 col-lg-8">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <div class="d-flex align-items-center justify-content-between">
@@ -15,25 +15,21 @@
         </div>
     </div>
 <% } %>
-
     <div class="row">
-        <div class="col-8 offset-2 md-3 mt-5">
+        <div class="col-8 offset-2 mt-0 mb-3">
             <h3 class="offset-2"><%= listing.title %></h3>
-
-        </div><br><br><br><br>
-        <div class="card col-6 offset-3 show-card listing-card">
+        </div>
+        <div class="card col-6 offset-3 show-card listing-card mt-0">
 
             <img src="<%= (listing.image && listing.image.url) ? listing.image.url : 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1196&auto=format&fit=crop&ixlib=rb-4.1.0' %>" class="card-img-top show-img " alt="listing_image">
             <div class="card-body">
-                <p class="card-text offset-1">Owned by <i><%= (listing.owner && listing.owner.username) ? listing.owner.username : 'Unknown owner' %></i></p><br>
-                    <p class="card-text"><%= listing.description %></p><br>
-                       <p class="card-text">$<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %></p> <br>
-                            <p class="card-text"><%= listing.location %></p><br>
-                            <p class="card-text"><%= listing.country %></p><br>
-                </p>
+                <p class="card-text offset-1 mb-2"><strong>Owned by <i><%= (listing.owner && listing.owner.username) ? listing.owner.username : 'Unknown owner' %></i></strong></p>
+                <p class="card-text mb-2"><%= listing.description %></p>
+                <p class="card-text mb-2">$<%= (typeof listing.price === 'number' ? listing.price.toLocaleString("en-IN") : 'N/A') %></p>
+                <p class="card-text mb-1"><%= listing.location %></p>
+                <p class="card-text mb-0"><%= listing.country %></p>
             </div>
         </div>
-        <br>
     </div>
 
 <div class="btns">
@@ -130,10 +126,57 @@
         </div>
     <% } %>
 </div>
-<div class="col-6 offset-2 mb-3">
-    <h3></h3>
-    <div id="map"></div>
+
+        <!-- Map temporarily disabled
+        <div class="col-10 col-lg-8 offset-1 offset-lg-2 mb-5 map-section">
+            <h3 class="mb-2">Where you'll be</h3>
+            <p class="text-muted mb-3"><%= ([listing.location, listing.country].filter(Boolean).join(', ')) || 'Location details not provided' %></p>
+            <div id="map" class="map-container" aria-live="polite">
+                <span class="visually-hidden">Map loading...</span>
+            </div>
+        </div>
+
+        <script id="map-config" type="application/json">
+            <%- JSON.stringify({
+                apiKey: (typeof googleMapsApiKey !== 'undefined' && googleMapsApiKey) ? googleMapsApiKey : '',
+                listing: {
+                    title: listing.title,
+                    location: listing.location,
+                    country: listing.country
+                }
+            }) %>
+        </script>
+        <script src="/js/map.js"></script>
+        -->
+
+<div id="chatbot-root" class="chatbot-root" aria-live="polite">
+    <button type="button" class="chatbot-toggle" data-chatbot-toggle aria-expanded="false" aria-controls="chatbot-panel">
+        <i class="fa-solid fa-robot" aria-hidden="true"></i>
+        <span>Ask about this stay</span>
+    </button>
+    <section id="chatbot-panel" class="chatbot-panel" data-chatbot-panel role="dialog" aria-modal="false" aria-labelledby="chatbot-title" aria-hidden="true">
+        <header class="chatbot-header">
+            <h2 id="chatbot-title">Stay Assistant</h2>
+            <button type="button" class="chatbot-close" data-chatbot-close aria-label="Close assistant">
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </header>
+        <div class="chatbot-messages" data-chatbot-messages role="log" aria-live="polite" aria-relevant="additions"></div>
+        <form class="chatbot-form" data-chatbot-form autocomplete="off">
+            <label for="chatbot-input" class="visually-hidden">Ask a question about this listing</label>
+            <input id="chatbot-input" type="text" name="message" class="chatbot-input" data-chatbot-input placeholder="Ask a question..." autocomplete="off">
+            <button type="submit" class="chatbot-send">Send</button>
+        </form>
+    </section>
 </div>
-</div>
+
+<script id="listing-chatbot-data" type="application/json">
+    <%- JSON.stringify({
+        title: listing.title,
+        price: (typeof listing.price === 'number') ? listing.price : null,
+        location: listing.location,
+        owner: (listing.owner && listing.owner.username) ? listing.owner.username : null
+    }) %>
+</script>
 
 <script src="/js/script.js"></script>

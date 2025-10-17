@@ -1,5 +1,7 @@
 <% layout("/layouts/boilerplate") %>
 
+<% const activeSearchTerm = (typeof searchTerm !== 'undefined' && searchTerm) ? searchTerm : ''; %>
+
 <style>
 /* Filters container: icons on the left, tax toggle aligned to the right */
 
@@ -150,6 +152,13 @@
 
 </div>
 
+<% if (activeSearchTerm && !allListings.length) { %>
+  <div class="alert alert-warning alert-dismissible fade show mt-3 no-results-alert" role="status" aria-live="assertive">
+    No stays match "<%= activeSearchTerm %>". Try a different destination.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
   <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1 g-3 mt-3">
 
 <% for(let listing of allListings) { %>
@@ -190,6 +199,13 @@ for(info of taxInfo){
 }
 
  });
+
+ const noResultsAlert = document.querySelector('.no-results-alert');
+ if (noResultsAlert) {
+   noResultsAlert.addEventListener('closed.bs.alert', () => {
+     window.location.href = '/listings';
+   });
+ }
 </script>
   
  

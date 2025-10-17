@@ -1,0 +1,213 @@
+<% layout('/layouts/boilerplate') %>
+
+<% const summary = analyticsData.summary || {}; %>
+<% const priceBuckets = analyticsData.priceBuckets || []; %>
+<% const topMarkets = analyticsData.topMarkets || []; %>
+<% const topPremiumListings = analyticsData.topPremiumListings || []; %>
+<% const ratingLeaders = analyticsData.ratingLeaders || []; %>
+
+<div class="analytics-page">
+  <section class="analytics-hero">
+    <div class="analytics-hero__content">
+      <h1 class="analytics-title">Market Intelligence Dashboard</h1>
+      <p class="analytics-subtitle">Track portfolio performance, pricing posture, and guest sentiment across your inventory in one glance.</p>
+    </div>
+  </section>
+
+  <section class="metrics-grid">
+    <div class="metric-card">
+      <h3>Total Supply</h3>
+      <div class="metric-value"><%= (summary.totalListings || 0).toLocaleString('en-IN') %></div>
+      <small>Active listings in the marketplace</small>
+    </div>
+    <div class="metric-card">
+      <h3>Avg. Nightly Rate</h3>
+      <div class="metric-value">$<%= summary.averagePrice ? Math.round(summary.averagePrice).toLocaleString('en-IN') : '0' %></div>
+      <small>Median $<%= summary.medianPrice ? Math.round(summary.medianPrice).toLocaleString('en-IN') : '0' %> • Range $<%= summary.minPrice ? Math.round(summary.minPrice).toLocaleString('en-IN') : '0' %> - $<%= summary.maxPrice ? Math.round(summary.maxPrice).toLocaleString('en-IN') : '0' %></small>
+    </div>
+    <div class="metric-card">
+      <h3>Guest Sentiment</h3>
+      <div class="metric-value">
+        <% if (summary.averageRating) { %>
+          <span class="rating-badge"><i class="fa-solid fa-star"></i><%= summary.averageRating.toFixed(1) %></span>
+        <% } else { %>
+          <span class="rating-badge"><i class="fa-regular fa-star"></i>N/A</span>
+        <% } %>
+      </div>
+      <small><%= (summary.totalReviews || 0).toLocaleString('en-IN') %> verified reviews analysed</small>
+    </div>
+    <div class="metric-card">
+      <h3>Top Earners</h3>
+      <div class="metric-value">
+        <% if (topPremiumListings.length) { %>
+          $<%= Math.round(topPremiumListings[0].price).toLocaleString('en-IN') %>
+        <% } else { %>
+          $0
+        <% } %>
+      </div>
+      <small>Highest nightly rate in current portfolio</small>
+    </div>
+  </section>
+
+  <section class="chart-section">
+    <div class="chart-card chart-card--compact">
+      <h2>Top Markets by Supply</h2>
+      <canvas id="marketShareChart" aria-label="Top markets bar chart" role="img"></canvas>
+    </div>
+    <div class="chart-card chart-card--compact">
+      <h2>Rate Distribution</h2>
+      <canvas id="priceBucketChart" aria-label="Price bucket chart" role="img"></canvas>
+    </div>
+  </section>
+
+  <section class="market-table market-table--markets">
+    <div class="market-table__header">
+      <div>
+        <h2 class="h5 mb-0">Market Breakdown</h2>
+        <small class="text-muted">Blend of supply concentration, price stance, and review volume</small>
+      </div>
+      <div class="market-legend">
+        <span><i class="fa-solid fa-circle"></i> Listings</span>
+        <span><i class="fa-solid fa-circle"></i> Avg. Rate</span>
+        <span><i class="fa-solid fa-circle"></i> Reviews</span>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-borderless align-middle mb-0 market-table__grid">
+        <thead>
+          <tr>
+            <th scope="col">Country</th>
+            <th scope="col" class="text-end">Listings</th>
+            <th scope="col" class="text-end">Avg. Rate</th>
+            <th scope="col" class="text-end">Reviews</th>
+            <th scope="col" class="text-end">Avg. Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (topMarkets.length) { %>
+            <% topMarkets.forEach((market) => { %>
+              <tr>
+                <td>
+                  <div class="market-country">
+                    <span class="market-pill"><%= market.country.slice(0, 2).toUpperCase() %></span>
+                    <span><%= market.country %></span>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="metric-with-bar" data-bar-scope="markets">
+                    <span><%= market.listingCount.toLocaleString('en-IN') %></span>
+                    <span class="metric-bar" style="--metric-value: <%= market.listingCount %>"></span>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="metric-with-bar metric-with-bar--rate" data-bar-scope="markets">
+                    <span>$<%= Math.round(market.avgPrice || 0).toLocaleString('en-IN') %></span>
+                    <span class="metric-bar" style="--metric-value: <%= Math.round(market.avgPrice || 0) %>"></span>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <div class="metric-with-bar metric-with-bar--reviews" data-bar-scope="markets">
+                    <span><%= (market.totalReviews || 0).toLocaleString('en-IN') %></span>
+                    <span class="metric-bar" style="--metric-value: <%= market.totalReviews || 0 %>"></span>
+                  </div>
+                </td>
+                <td class="text-end">
+                  <% if (market.avgRating) { %>
+                    <span class="rating-badge"><i class="fa-solid fa-star"></i><%= market.avgRating.toFixed(1) %></span>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">No market insights available yet. Add listings and reviews to populate this table.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 mb-0">Top Grossing Listings</h2>
+      <small class="text-muted">Nightly rate leaders across the portfolio</small>
+    </div>
+    <div class="top-premium-list">
+      <% if (topPremiumListings.length) { %>
+        <% topPremiumListings.forEach((listing, index) => { %>
+          <article class="premium-card">
+            <header class="premium-card__header">
+              <span class="premium-rank">#<%= index + 1 %></span>
+              <span class="premium-chip"><i class="fa-solid fa-trophy"></i> Top earner</span>
+            </header>
+            <h3 class="premium-title"><%= listing.title %></h3>
+            <p class="premium-location"><i class="fa-solid fa-location-dot"></i> <%= listing.location %>, <%= listing.country %></p>
+            <p class="premium-price">$<%= Math.round(listing.price).toLocaleString('en-IN') %> <span>/ night</span></p>
+            <a class="premium-link" href="/listings/<%= listing.id %>">View listing <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+          </article>
+        <% }) %>
+      <% } else { %>
+        <div class="text-muted">Add listings to surface premium performers.</div>
+      <% } %>
+    </div>
+  </section>
+
+  <section class="market-table market-table--leaders">
+    <div class="market-table__header">
+      <div>
+        <h2 class="h5 mb-0">Experience Leaders</h2>
+        <small class="text-muted">Markets with at least 3 verified reviews</small>
+      </div>
+      <div class="market-legend">
+        <span><i class="fa-solid fa-star"></i> Avg Rating</span>
+        <span><i class="fa-solid fa-message"></i> Reviews</span>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-borderless align-middle mb-0 market-table__grid">
+        <thead>
+          <tr>
+            <th scope="col">Country</th>
+            <th scope="col" class="text-end">Average Rating</th>
+            <th scope="col" class="text-end">Review Volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (ratingLeaders.length) { %>
+            <% ratingLeaders.forEach((market) => { %>
+              <tr>
+                <td>
+                  <div class="market-country">
+                    <span class="market-pill market-pill--accent"><%= market.country.slice(0, 2).toUpperCase() %></span>
+                    <span><%= market.country %></span>
+                  </div>
+                </td>
+                <td class="text-end"><span class="rating-badge"><i class="fa-solid fa-star"></i><%= market.avgRating.toFixed(2) %></span></td>
+                <td class="text-end">
+                  <div class="metric-with-bar metric-with-bar--reviews" data-bar-scope="leaders">
+                    <span><%= market.reviewCount.toLocaleString('en-IN') %></span>
+                    <span class="metric-bar" style="--metric-value: <%= market.reviewCount %>"></span>
+                  </div>
+                </td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr>
+              <td colspan="3" class="text-center text-muted py-4">Collect more guest feedback to unlock quality insights.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<% const analyticsJson = JSON.stringify(analyticsData).replace(/</g, '\\u003c'); %>
+<script>
+  window.analyticsData = JSON.parse('<%- analyticsJson %>');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/analytics.js"></script>

@@ -1,10 +1,26 @@
 const Listing = require('../models/listing');       
 
+const escapeRegExp = (value = '') => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 module.exports.index=async (req, res) => {
-  const allListings = await Listing.find({});
-  console.log('index: found', allListings.length, 'listings');
-  res.render('listings/index', { allListings });
+  const rawSearch = req.query.search || '';
+  const searchTerm = rawSearch.trim();
+  let query = {};
+
+  if (searchTerm) {
+    const safePattern = new RegExp(escapeRegExp(searchTerm), 'i');
+    query = {
+      $or: [
+        { country: safePattern },
+        { location: safePattern },
+        { title: safePattern },
+      ],
+    };
+  }
+
+  const allListings = await Listing.find(query);
+  console.log('index: search "%s" found', searchTerm || 'all', allListings.length, 'listings');
+  res.render('listings/index', { allListings, searchTerm });
 }
 
 
@@ -37,7 +53,13 @@ console.log(listing);
     listing.image.url = 'https://images.unsplash.com/photo-1473116763249-2faaef81ccda?q=80&w=1196&auto=format&fit=crop&ixlib=rb-4.1.0';
     console.log('showListing: applied fallback image URL for listing', id);
   }
-  res.render('listings/show', { listing });
+  const googleMapsApiKey =
+    process.env.GOOGLE_MAPS_API_KEY ||
+    process.env.GOOGLE_API_KEY ||
+    process.env.GOOGLE_MAP_API_KEY ||
+    process.env.GMAPS_API_KEY ||
+    '';
+  res.render('listings/show', { listing, googleMapsApiKey });
 };
 
 

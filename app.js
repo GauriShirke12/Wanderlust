@@ -18,6 +18,7 @@ const User = require('./models/user');
 const listingRouter = require('./routes/listing');
 const reviewsRouter = require('./routes/review'); 
 const userRouter =require('./routes/user');
+const analyticsRouter = require('./routes/analytics');
 
 
 
@@ -57,8 +58,9 @@ const sessionOptions = {
 
 
     
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  res.locals.searchTerm = (req.query && typeof req.query.search === 'string') ? req.query.search.trim() : '';
     if (process.env.NODE_ENV === 'development') {
       console.log('res.locals.success after consuming flash:', res.locals.success);
     }
@@ -93,6 +95,7 @@ app.use(express.json());
 
 app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewsRouter);
+app.use('/analytics', analyticsRouter);
 
 // Debug middleware: log incoming requests (temporary)
 app.use((req, res, next) => {
@@ -106,6 +109,7 @@ app.use((req, res, next) => {
 
 app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewsRouter);
+app.use('/analytics', analyticsRouter);
 app.use('/', userRouter);
 
 
