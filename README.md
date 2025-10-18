@@ -1,17 +1,17 @@
 # 🌍 Wanderlust
 
-A full-stack Node.js application inspired by Airbnb that allows travelers to browse, create, review, and manage vacation rental listings. Built with Express, MongoDB, and EJS templates, it delivers a secure, server-rendered experience with session-backed authentication, Cloudinary image uploads, and intelligent guest support via a built-in chatbot and interactive analytics dashboard.
+A full-stack Node.js application that allows travelers to browse, create, review, and manage vacation rental listings. Built with Express, MongoDB, and EJS templates, it delivers a secure, server-rendered experience with session-backed authentication, Cloudinary image uploads, and intelligent guest support via a built-in chatbot and interactive analytics dashboard.
 
 ---
 
 ## ✨ Features
 
-* 🏡 Listings Catalogue — Full create, read, update, and delete (CRUD) workflows with robust server-side validation using Joi.
-* 🔐 User Authentication — Secure login and registration via Passport local strategy, with persistent sessions, flash messages, and redirect handling.
-* ⭐ Review System — Ratings and comments attached to listings, with ownership verification for editing or deletion and cascading cleanup on listing removal.
-* 📸 Image Uploads — Integrated Multer + Cloudinary for media management, including defensive fallbacks for missing assets.
-* 💬 Intelligent Chatbot — On-page conversational assistant that summarizes listing details and answers FAQs about pricing, availability, and host information.
-* 📊 Analytics Dashboard — Visualizes key performance indicators such as listing distribution, average pricing, and review sentiment using Chart.js.
+* 🏡 Listings Catalogue: Full create, read, update, and delete (CRUD) workflows with robust server-side validation using Joi.
+* 🔐 User Authentication: Secure login and registration via Passport local strategy, with persistent sessions, flash messages, and redirect handling.
+* ⭐ Review System: Ratings and comments attached to listings, with ownership verification for editing or deletion and cascading cleanup on listing removal.
+* 📸 Image Uploads: Integrated Multer + Cloudinary for media management, including defensive fallbacks for missing assets.
+* 💬 Intelligent Chatbot: On-page conversational assistant that summarizes listing details and answers FAQs about pricing, availability, and host information.
+* 📊 Analytics Dashboard: Visualizes key performance indicators such as listing distribution, average pricing, and review sentiment using Chart.js.
 
 ---
 
