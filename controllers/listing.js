@@ -58,6 +58,7 @@ console.log(listing);
     process.env.GOOGLE_API_KEY ||
     process.env.GOOGLE_MAP_API_KEY ||
     process.env.GMAPS_API_KEY ||
+    process.env.CLOUD_API_KEY ||
     '';
   res.render('listings/show', { listing, googleMapsApiKey });
 };
