@@ -161,4 +161,4 @@ module.exports.deleteListing=async (req, res) => {
     });
   }
   res.redirect('/listings');
-}:
+};
