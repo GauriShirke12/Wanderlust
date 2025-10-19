@@ -127,11 +127,22 @@
     <% } %>
 </div>
 
-<div class="mb-5 map-section-full">
-    <div class="map-section-content">
-        
-    </div>
+<% 
+        const mapLocationParts = [];
+        if (listing.location) { mapLocationParts.push(listing.location); }
+        if (listing.country) { mapLocationParts.push(listing.country); }
+        const mapQuery = encodeURIComponent(mapLocationParts.join(", ") || "San Francisco, CA");
+%>
+<h4 class="mb-3 offset-3">Where You'll be</h4>
+<div class="map-container">
+    <iframe
+        src="https://maps.google.com/maps?q=<%= mapQuery %>&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
 </div>
+
 
 
 
