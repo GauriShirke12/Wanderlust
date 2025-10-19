@@ -127,27 +127,36 @@
     <% } %>
 </div>
 
-        <!-- Map temporarily disabled
-        <div class="col-10 col-lg-8 offset-1 offset-lg-2 mb-5 map-section">
-            <h3 class="mb-2">Where you'll be</h3>
-            <p class="text-muted mb-3"><%= ([listing.location, listing.country].filter(Boolean).join(', ')) || 'Location details not provided' %></p>
-            <div id="map" class="map-container" aria-live="polite">
-                <span class="visually-hidden">Map loading...</span>
-            </div>
-        </div>
+<div class="col-10 col-lg-8 offset-1 offset-lg-2 mb-5 map-section">
+    <h3 class="mb-2">Where you'll be</h3>
+    <p class="text-muted mb-3"><%= ([listing.location, listing.country].filter(Boolean).join(', ')) || 'Location details not provided' %></p>
+    <div id="map" class="map-container" aria-live="polite">
+        <span class="visually-hidden">Map loading...</span>
+    </div>
+</div>
 
-        <script id="map-config" type="application/json">
-            <%- JSON.stringify({
-                apiKey: (typeof googleMapsApiKey !== 'undefined' && googleMapsApiKey) ? googleMapsApiKey : '',
-                listing: {
-                    title: listing.title,
-                    location: listing.location,
-                    country: listing.country
-                }
-            }) %>
-        </script>
-        <script src="/js/map.js"></script>
-        -->
+<script id="map-config" type="application/json">
+    <%- JSON.stringify({
+        apiKey: (typeof googleMapsApiKey !== 'undefined' && googleMapsApiKey) ? googleMapsApiKey : '',
+        listing: {
+            title: listing.title,
+            location: listing.location,
+            country: listing.country
+        }
+    }) %>
+</script>
+<script>
+    console.log('Map Config loaded:', document.getElementById('map-config') ? 'YES' : 'NO');
+    try {
+        const config = JSON.parse(document.getElementById('map-config').textContent);
+        console.log('API Key present:', config.apiKey ? 'YES (length: ' + config.apiKey.length + ')' : 'NO');
+        console.log('Location:', config.listing.location);
+        console.log('Country:', config.listing.country);
+    } catch(e) {
+        console.error('Error parsing map config:', e);
+    }
+</script>
+<script src="/js/map.js"></script>
 
 <div id="chatbot-root" class="chatbot-root" aria-live="polite">
     <button type="button" class="chatbot-toggle" data-chatbot-toggle aria-expanded="false" aria-controls="chatbot-panel">

@@ -1,4 +1,3 @@
-/* Map functionality temporarily disabled.
 (() => {
     const MAP_CONTAINER_ID = 'map';
     const CONFIG_ELEMENT_ID = 'map-config';
@@ -198,4 +197,3 @@
         };
     document.head.appendChild(loader);
 })();
-*/
